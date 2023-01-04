@@ -20,6 +20,7 @@ RUN groupadd --gid $USER_GID $USERNAME && \
         gcc \
         g++ \
         clang \
+        libfontconfig-dev \
         libsdl2-dev \
         libsdl2-ttf-dev \
         libasound2-dev \
