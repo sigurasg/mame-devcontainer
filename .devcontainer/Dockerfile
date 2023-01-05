@@ -20,6 +20,7 @@ RUN groupadd --gid $USER_GID $USERNAME && \
         gcc \
         g++ \
         clang \
+        lldb \
         libfontconfig-dev \
         libsdl2-dev \
         libsdl2-ttf-dev \
