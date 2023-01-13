@@ -64,7 +64,7 @@ def but(x, y, name):
 
 def pow(x, y, name):
     # TODO(siggi): Render the power button properly
-    pot(x, y, name)
+    circle(cx = x, cy = y, r = 10 / 2, stroke_width = 0.5)
 
 
 def volts_div(x, y):
