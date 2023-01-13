@@ -16,7 +16,7 @@ def rr(x, y, width, height, r, stroke_width):
                     y = y + stroke_width / 2,
                     width = width - stroke_width,
                     height = height - stroke_width,
-                    r = 10,
+                    r = r,
                     stroke_width=stroke_width))
 
 
@@ -48,7 +48,7 @@ def main_bezel(width, height, stroke_width):
         y = y,
         width = 105,
         height = 83.2,
-        r = 2,
+        r = 0.1,
         stroke_width = 1)
 
 def pot(x, y, name):
@@ -85,6 +85,13 @@ def sec_div(x, y):
     # TODO(siggi): Render the sec/div dial properly
     pot(x, y, "")
 
+def up_dn_switch(x, y, name):
+    # TODO(siggi): Render the up_dn switches properly
+    but(x, y, name)
+
+def bnc(x, y, name):
+    # TODO(siggi): Render the BNCs properly
+    pot(x, y, name)
 
 def main():
     # all dimensions in mm.
@@ -139,11 +146,19 @@ def main():
     but(x = vert_pos_x + 1 * but_space, y = row_y, name = "Dt")
     but(x = vert_pos_x + 2 * but_space, y = row_y, name = "TRACKING")
 
+    # Trigger controls
+    but(x = bezel_edge + 107.3 + 4.3/2, y = row_y, name = "A/B TRIG")
+    but(x = bezel_edge + 107.3 + 4.3/2 + 15.3, y = row_y, name = "SLOPE")
+
     row_y += 18.8
     but(x = first_but + 0 * but_space, y = row_y, name ="ADD")
     but(x = first_but + 1 * but_space, y = row_y, name ="INVERT")
     but(x = first_but + 2 * but_space, y = row_y, name ="CHOP")
     but(x = first_but + 3 * but_space, y = row_y, name ="20 MHZ\nBW LIMIT")
+
+    row_y = 46
+    pot(x = bezel_edge + 72, y = row_y, name = "D REF or DLY POS")
+    pot(x = bezel_edge + 72 + 22.3, y = row_y, name = "D")
 
     btn_width = 18.1
     first_but = bezel_edge + 7.5 + btn_width / 2
@@ -152,6 +167,33 @@ def main():
     volts_div(x = first_but + 31.6, y = row_y)
 
     sec_div(x = first_but + 86.5 - btn_width / 2 - 21.5 / 2, y = row_y)
+
+    first_switch = bezel_edge + 110
+    row_y = 83.5
+    switch_space = 22.5 / 3
+    up_dn_switch(x = first_switch + 0 * switch_space, y = row_y, name = "MODE")
+    up_dn_switch(x = first_switch + 1 * switch_space, y = row_y, name = "SOURCE")
+    up_dn_switch(x = first_switch + 2 * switch_space, y = row_y, name = "COUPLING")
+
+    row_y = 104
+    up_dn_switch(x = bezel_edge + 23, y = row_y, name = "CH1 CPL")
+    up_dn_switch(x = bezel_edge + 55, y = row_y, name = "CH2_CPL")
+   
+    pot(x = bezel_edge + 72, y = row_y, name = "TRACE\nSEP")
+    # CH3 POS
+    pot(x = bezel_edge + 96, y = row_y, name = "POSITION")
+
+    but(x = bezel_edge + 111, y = row_y, name = "VOLTS/DIV")
+    but(x = bezel_edge + 121, y = row_y, name = "VOLTS/DIV")
+
+    # CH4 POS
+    pot(x = bezel_edge + 139, y = row_y, name = "POSITION")
+
+    row_y = 130
+    bnc(x = bezel_edge + 16, y = row_y, name = "CH 1")
+    bnc(x = bezel_edge + 58, y = row_y, name = "CH 2")
+    bnc(x = bezel_edge + 95, y = row_y, name = "CH 3")
+    bnc(x = bezel_edge + 139, y = row_y, name = "CH 4")
 
     print(SVG_TRAILER)
 
