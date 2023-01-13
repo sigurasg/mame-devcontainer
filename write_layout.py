@@ -52,23 +52,14 @@ def main_bezel(width, height, stroke_width):
         stroke_width = 1)
 
 def pot(x, y, name):
-    CIRCLE_TEMPL = """<circle cx="{cx}mm" cy="{cy}mm" r="{r}mm"
-        style="fill:rgb(255,255,255);stroke-width:{stroke_width}mm;stroke:rgb(0,0,0)"/>"""
-
-    print(CIRCLE_TEMPL.format(cx=x, cy=y, r=9.5 / 2, stroke_width=1))
-    print(CIRCLE_TEMPL.format(cx=x, cy=y, r=5.4 / 2, stroke_width=1))
+    circle(cx=x, cy=y, r=9.5 / 2, stroke_width=1)
+    circle(cx=x, cy=y, r=5.4 / 2, stroke_width=1)
 
 
 def but(x, y, name):
-    TEMPL = """<rect x="{x}mm" y="{y}mm" width="{side}mm" height="{side}mm"
-        style="fill:rgb(255,255,255);stroke-width:{stroke_width}mm;stroke:rgb(0,0,0)"/>"""
-
     side = 4.5
     stroke = 0.4
-    print(TEMPL.format(x = x - side / 2 - stroke / 2,
-                    y = y - side / 2 - stroke / 2,
-                    side = side,
-                    stroke_width = stroke))
+    center_rect(x = x, y = y, width = side, height = side, stroke_width = stroke)
 
 
 def pow(x, y, name):
@@ -85,13 +76,36 @@ def sec_div(x, y):
     # TODO(siggi): Render the sec/div dial properly
     pot(x, y, "")
 
+
 def up_dn_switch(x, y, name):
     # TODO(siggi): Render the up_dn switches properly
-    but(x, y, name)
+    center_rect(x, y, 6.6, 11.5, 0.5)
+    center_rect(x, y, 6.6, 3.5, 1)
+
 
 def bnc(x, y, name):
-    # TODO(siggi): Render the BNCs properly
-    pot(x, y, name)
+    circle(cx = x, cy = y, r = 14.8 / 2, stroke_width = 1)
+    circle(cx = x, cy = y, r = 9.6 / 2, stroke_width = 0.5)
+    circle(cx = x, cy = y, r = 4.7 / 2, stroke_width = 1)
+
+
+def circle(cx, cy, r, stroke_width):
+    CIRCLE_TEMPL = """<circle cx="{cx}mm" cy="{cy}mm" r="{r}mm"
+        style="fill:rgb(255,255,255);stroke-width:{stroke_width}mm;stroke:rgb(0,0,0)"/>"""
+
+    print(CIRCLE_TEMPL.format(cx = cx, cy = cy, r = r - stroke_width / 2, stroke_width = stroke_width))
+
+
+def center_rect(x, y, width, height, stroke_width):
+    TEMPL = """<rect x="{x}mm" y="{y}mm" width="{width}mm" height="{height}mm"
+        style="fill:rgb(255,255,255);stroke-width:{stroke_width}mm;stroke:rgb(0,0,0)"/>"""
+
+    print(TEMPL.format(x = x - (width - stroke_width) / 2,
+                    y = y - (height - stroke_width) / 2,
+                    width = width - stroke_width,
+                    height = height - stroke_width,
+                    stroke_width = stroke_width))
+
 
 def main():
     # all dimensions in mm.
@@ -170,7 +184,7 @@ def main():
 
     first_switch = bezel_edge + 110
     row_y = 83.5
-    switch_space = 22.5 / 3
+    switch_space = 11.6
     up_dn_switch(x = first_switch + 0 * switch_space, y = row_y, name = "MODE")
     up_dn_switch(x = first_switch + 1 * switch_space, y = row_y, name = "SOURCE")
     up_dn_switch(x = first_switch + 2 * switch_space, y = row_y, name = "COUPLING")
@@ -178,7 +192,7 @@ def main():
     row_y = 104
     up_dn_switch(x = bezel_edge + 23, y = row_y, name = "CH1 CPL")
     up_dn_switch(x = bezel_edge + 55, y = row_y, name = "CH2_CPL")
-   
+
     pot(x = bezel_edge + 72, y = row_y, name = "TRACE\nSEP")
     # CH3 POS
     pot(x = bezel_edge + 96, y = row_y, name = "POSITION")
