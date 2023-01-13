@@ -69,12 +69,15 @@ def pow(x, y, name):
 
 def volts_div(x, y):
     # TODO(siggi): Render the volts/div dials properly
-    pot(x, y, "")
+    circle(cx = x, cy = y, r = 17.6 / 2, stroke_width = 0.5)
+    circle(cx = x, cy = y, r = 10 / 2, stroke_width = 0.5)
 
 
 def sec_div(x, y):
     # TODO(siggi): Render the sec/div dial properly
-    pot(x, y, "")
+    circle(cx = x, cy = y, r = 28.3 / 2, stroke_width = 0.1)
+    circle(cx = x, cy = y, r = 21.3 / 2, stroke_width = 0.5)
+    circle(cx = x, cy = y, r = 10 / 2, stroke_width = 0.5)
 
 
 def up_dn_switch(x, y, name):
