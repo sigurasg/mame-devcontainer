@@ -153,6 +153,13 @@ def main():
     pot(x = first_pot + 88, y = 20, name = "HOLDOFF")
     pot(x = first_pot + 120, y = 20, name = "LEVEL")
 
+    led_x = first_pot + (88 + 120) / 2
+    led_space = 4
+    led(x = led_x, y = 14 + 0 * led_space, name = "A SWP\nTRIGD")
+    led(x = led_x, y = 14 + 1 * led_space, name = "READY")
+    led(x = led_x, y = 14 + 2 * led_space, name = "+")
+    led(x = led_x, y = 14 + 3 * led_space, name = "-")
+
     first_but = bezel_edge + 18.5
     but_space = 29.5 / 3
     row_y = 35.8
@@ -192,7 +199,6 @@ def main():
     first_switch = bezel_edge + 110
     row_y = 83.5
     switch_space = 11.6
-    led_space = 4
 
     led_x = x = first_switch + 0 * switch_space
     led(x = led_x, y = 46 + 0 * led_space, name = "AUTO LVL")
