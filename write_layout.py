@@ -92,6 +92,10 @@ def bnc(x, y, name):
     circle(cx = x, cy = y, r = 4.7 / 2, stroke_width = 1)
 
 
+def led(x, y, name):
+    center_rect(x = x, y = y, width = 6, height = 4, stroke_width = 0.1)
+
+
 def circle(cx, cy, r, stroke_width):
     CIRCLE_TEMPL = """<circle cx="{cx}mm" cy="{cy}mm" r="{r}mm"
         style="fill:rgb(255,255,255);stroke-width:{stroke_width}mm;stroke:rgb(0,0,0)"/>"""
@@ -167,13 +171,13 @@ def main():
     but(x = bezel_edge + 107.3 + 4.3/2, y = row_y, name = "A/B TRIG")
     but(x = bezel_edge + 107.3 + 4.3/2 + 15.3, y = row_y, name = "SLOPE")
 
-    row_y += 18.8
+    row_y += 15.4
     but(x = first_but + 0 * but_space, y = row_y, name ="ADD")
     but(x = first_but + 1 * but_space, y = row_y, name ="INVERT")
     but(x = first_but + 2 * but_space, y = row_y, name ="CHOP")
     but(x = first_but + 3 * but_space, y = row_y, name ="20 MHZ\nBW LIMIT")
 
-    row_y = 46
+    row_y = 52
     pot(x = bezel_edge + 72, y = row_y, name = "D REF or DLY POS")
     pot(x = bezel_edge + 72 + 22.3, y = row_y, name = "D")
 
@@ -188,6 +192,31 @@ def main():
     first_switch = bezel_edge + 110
     row_y = 83.5
     switch_space = 11.6
+    led_space = 4
+
+    led_x = x = first_switch + 0 * switch_space
+    led(x = led_x, y = 46 + 0 * led_space, name = "AUTO LVL")
+    led(x = led_x, y = 46 + 1 * led_space, name = "AUTO")
+    led(x = led_x, y = 46 + 2 * led_space, name = "NORM")
+    led(x = led_x, y = 46 + 3 * led_space, name = "SGL SEQ")
+    led(x = led_x, y = 46 + 5 * led_space, name = "RUN")
+    led(x = led_x, y = 46 + 6 * led_space, name = "TRIG")
+
+    led_x = x = first_switch + 1 * switch_space
+    led(x = led_x, y = 46 + 0 * led_space, name = "VERT")
+    led(x = led_x, y = 46 + 1 * led_space, name = "CH 1")
+    led(x = led_x, y = 46 + 2 * led_space, name = "CH 2")
+    led(x = led_x, y = 46 + 3 * led_space, name = "CH 3")
+    led(x = led_x, y = 46 + 4 * led_space, name = "CH 4")
+    led(x = led_x, y = 46 + 5 * led_space, name = "LINE")
+
+    led_x = x = first_switch + 2 * switch_space
+    led(x = led_x, y = 46 + 0 * led_space, name = "DC")
+    led(x = led_x, y = 46 + 1 * led_space, name = "NOISE")
+    led(x = led_x, y = 46 + 2 * led_space, name = "HF")
+    led(x = led_x, y = 46 + 3 * led_space, name = "LF")
+    led(x = led_x, y = 46 + 4 * led_space, name = "AC")
+
     up_dn_switch(x = first_switch + 0 * switch_space, y = row_y, name = "MODE")
     up_dn_switch(x = first_switch + 1 * switch_space, y = row_y, name = "SOURCE")
     up_dn_switch(x = first_switch + 2 * switch_space, y = row_y, name = "COUPLING")
@@ -195,6 +224,20 @@ def main():
     row_y = 104
     up_dn_switch(x = bezel_edge + 23, y = row_y, name = "CH1 CPL")
     up_dn_switch(x = bezel_edge + 55, y = row_y, name = "CH2_CPL")
+
+    led_x = bezel_edge + 12
+    led(x = led_x, y = 94 + 0 * led_space, name = "AC")
+    led(x = led_x, y = 94 + 1 * led_space, name = "GND")
+    led(x = led_x, y = 94 + 2 * led_space, name = "DC")
+    led(x = led_x, y = 94 + 3 * led_space, name = "GND")
+    led(x = led_x, y = 94 + 4 * led_space, name = "50Ohm DC")
+
+    led_x = bezel_edge + 44
+    led(x = led_x, y = 94 + 0 * led_space, name = "AC")
+    led(x = led_x, y = 94 + 1 * led_space, name = "GND")
+    led(x = led_x, y = 94 + 2 * led_space, name = "DC")
+    led(x = led_x, y = 94 + 3 * led_space, name = "GND")
+    led(x = led_x, y = 94 + 4 * led_space, name = "50Ohm DC")
 
     pot(x = bezel_edge + 72, y = row_y, name = "TRACE\nSEP")
     # CH3 POS
