@@ -5,13 +5,54 @@ XML_HEADER = """<?xml version="1.0" encoding="UTF-8" standalone="no"?>"""
 SVG_HEADER = """<svg width="{width}mm" height="{height}mm"
   xmlns="http://www.w3.org/2000/svg">"""
 SVG_TRAILER = """</svg>"""
-LAY_HEADER = """<?xml version="1.0"?>
+LAY_TEMPL = """<?xml version="1.0"?>
 <!--
 license:CC0
 -->
 <mamelayout version="2">
-"""
-LAY_TRAILER = "</mamelayout>"
+    <element name="LED" defstate="0">
+        <rect state="0"><color red="1.0" green="1.0" blue="1.0" alpha="0.0" /></rect>
+        <rect state="1"><color red="1.0" green="0.18" blue="0.20" /></rect>
+    </element>
+    <element name="BUTTON">
+        <rect state="0">
+            <bounds x="0.0" y="0.0" width="1.0" height="1.0" />
+            <color red="1.0" green="1.0" blue="1.0" alpha="0.0"/>
+        </rect>
+        <rect state="1">
+            <bounds x="0.0" y="0.0" width="1.0" height="1.0" />
+            <color red="0.5" green="0.5" blue="0.5" />
+        </rect>
+    </element>
+    <element name="Bezel">
+        <image>
+            <data><![CDATA[{bezel}]]>
+            </data>
+        </image>
+    </element>
+    <view name="Front Panel">
+        <element ref="Bezel">
+            <bounds x="0" y="0" width="302" height="150" />
+        </element>
+
+        <screen index="0">
+            <bounds x="{screen_x}" y="{screen_y}" width="{screen_width}" height="{screen_height}" />
+        </screen>
+{buttons}
+{leds}
+{up_dn_switches}
+    </view>
+</mamelayout>"""
+
+BUTTON_TEMPL = """\
+<element ref="BUTTON" inputtag="ROW{row}" inputmask="{mask:#02x}">
+    <bounds x="{x}" y="{y}" width="{width}" height="{height}" />
+</element>"""
+
+LED_TEMPL = """\
+<element ref="LED" name="FP_LED{num}">
+    <bounds x="{x}" y="{y}" width="{width}" height="{height}" />
+</element>"""
 
 
 def rr(x, y, width, height, r, stroke_width):
@@ -113,6 +154,11 @@ class LayoutWriter(object):
             r = 0.1,
             stroke_width = 1))
 
+        self.screen_x = x
+        self.screen_y = y
+        self.screen_width = 105
+        self.screen_height = 83.2
+
         self.bezel_edge = 142.25
 
         row_y = 78
@@ -179,10 +225,10 @@ def main():
     bezel_width = l.width # 302
     bezel_height = l.height #150
 
-    print(XML_HEADER)
-    print(SVG_HEADER.format(width = bezel_width, height = bezel_height))
+    bezel_svg = [XML_HEADER,
+                SVG_HEADER.format(width = bezel_width, height = bezel_height),
+                l.main_bezel()]
 
-    print(l.main_bezel())
 
     # Pots and buttons under the CRT.
     first_pot = 4.41 + 6.2 + 5
@@ -251,7 +297,7 @@ def main():
     row_y = 83.5
     switch_space = 11.6
 
-    led_x = x = first_switch + 0 * switch_space
+    led_x = first_switch + 0 * switch_space
     l.led(x = led_x, y = 46 + 0 * led_space, name = "AUTO LVL", num = 15)
     l.led(x = led_x, y = 46 + 1 * led_space, name = "AUTO", num = 14)
     l.led(x = led_x, y = 46 + 2 * led_space, name = "NORM", num = 13)
@@ -259,7 +305,7 @@ def main():
     l.led(x = led_x, y = 46 + 5 * led_space, name = "RUN", num = 16)
     l.led(x = led_x, y = 46 + 6 * led_space, name = "TRIG", num = 17)
 
-    led_x = x = first_switch + 1 * switch_space
+    led_x = first_switch + 1 * switch_space
     l.led(x = led_x, y = 46 + 0 * led_space, name = "VERT", num = 24)
     l.led(x = led_x, y = 46 + 1 * led_space, name = "CH 1", num = 25)
     l.led(x = led_x, y = 46 + 2 * led_space, name = "CH 2", num = 26)
@@ -267,7 +313,7 @@ def main():
     l.led(x = led_x, y = 46 + 4 * led_space, name = "CH 4", num = 28)
     l.led(x = led_x, y = 46 + 5 * led_space, name = "LINE", num = 29)
 
-    led_x = x = first_switch + 2 * switch_space
+    led_x = first_switch + 2 * switch_space
     l.led(x = led_x, y = 46 + 0 * led_space, name = "DC", num = 18)
     l.led(x = led_x, y = 46 + 1 * led_space, name = "NOISE", num = 19)
     l.led(x = led_x, y = 46 + 2 * led_space, name = "HF", num = 20)
@@ -306,9 +352,43 @@ def main():
     # CH4 POS
     l.pot(x = bezel_edge + 139, y = row_y, name = "POSITION")
 
-    print(l.output())
+    bezel_svg.append(l.output())
+    bezel_svg.append(SVG_TRAILER)
 
-    print(SVG_TRAILER)
+    buttons = []
+    for x, y, name, row, mask in l.buttons:
+        side = 4.5
+        if row and mask:
+            buttons.append(BUTTON_TEMPL.format(x = x - side / 2, y = y - side / 2, 
+                            row = row, mask = mask, width = side, height = side))
+
+    for x, y, name, row, mask in l.up_dn_switches:
+        width = 6.6
+        height = 11.5
+        # Start with the down button.
+        buttons.append(BUTTON_TEMPL.format(x = x - width / 2, y = y,
+                        row = row, mask = mask, width = width, height = height / 2))
+        buttons.append(BUTTON_TEMPL.format(x = x - width / 2, y = y - height / 2,
+                        row = row, mask = mask << 1, width = width, height = height / 2))
+
+
+    leds = []
+    for x, y, name, num in l.leds:
+        height = 4
+        width = 6
+        leds.append(LED_TEMPL.format(x = x - width / 2, y = y - height / 2, 
+                        num = num, width = width, height = height))
+
+    print(LAY_TEMPL.format(bezel = '\n'.join(bezel_svg),
+                           screen_x = l.screen_x, 
+                           screen_y = l.screen_y,
+                           screen_width = l.screen_width,
+                           screen_height = l.screen_height,
+                           buttons = '\n'.join(buttons),
+                           leds = '\n'.join(leds),
+                           up_dn_switches = ""))
+#    print('\n'.join(bezel_svg))
+
 
 if __name__ == '__main__':
     main()
