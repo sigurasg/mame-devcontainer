@@ -24,6 +24,12 @@ license:CC0
             <color red="0.5" green="0.5" blue="0.5" />
         </rect>
     </element>
+    <element name="SEC_DIV">
+    {sec_div}
+    </element>
+    <element name="VOLTS_DIV">
+    {volts_div}
+    </element>
     <element name="Bezel">
         <image>
             <data><![CDATA[{bezel}]]>
@@ -40,7 +46,7 @@ license:CC0
         </screen>
 {buttons}
 {leds}
-{up_dn_switches}
+{dials}
     </view>
 </mamelayout>"""
 
@@ -49,11 +55,33 @@ BUTTON_TEMPL = """\
     <bounds x="{x}" y="{y}" width="{width}" height="{height}" />
 </element>"""
 
+DIAL_TEMPL = """\
+<element ref="{ref}" inputraw="yes" inputtag="ROW{row}" inputmask="{mask:#02x}">
+    <bounds x="{x}" y="{y}" width="{width}" height="{height}" />
+</element>"""
+
 LED_TEMPL = """\
 <element ref="LED" name="FP_LED{num}">
     <bounds x="{x}" y="{y}" width="{width}" height="{height}" />
 </element>"""
 
+VOLTS_DIV_TEMPL="""\
+<image state="{code:#02x}" statemask="0x0F">
+<data><![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+<rect x="45" y="0" width="10" height="15" style="fill:rgb(0,0,0)"
+transform="rotate({deg}, 50, 50)" /></svg>]]></data>
+</image>
+"""
+
+SEC_DIV_TEMPL="""\
+<image state="{code:#02x}" statemask="0x1F">
+<data><![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+<rect x="44" y="0" width="10" height="15" style="fill:rgb(0,0,0)"
+transform="rotate({deg}, 50, 50)" /></svg>]]></data>
+</image>
+"""
 
 def rr(x, y, width, height, r, stroke_width):
     TEMPL = """<rect x="{x}mm" y="{y}mm" width="{width}mm" height="{height}mm" rx="{r}mm" ry="{r}mm"
@@ -95,6 +123,7 @@ class LayoutWriter(object):
         self.pots = []
         self.buttons = []
         self.up_dn_switches = []
+        self.dials = []
         self.bezel_edge = None
 
     def output(self):
@@ -162,9 +191,11 @@ class LayoutWriter(object):
         self.bezel_edge = 142.25
 
         row_y = 78
-        strs.append(self.volts_div(x = self.bezel_edge + 17, y = row_y))
-        strs.append(self.volts_div(x = self.bezel_edge + 49, y = row_y))
-        strs.append(self.sec_div(x = self.bezel_edge + 84, y = row_y))
+        strs.append(self.volts_div(x = self.bezel_edge + 17, y = row_y, row = 2, mask = 0x0f))
+        strs.append(self.volts_div(x = self.bezel_edge + 49, y = row_y, row = 3, mask = 0x0f))
+
+        strs.append(self.sec_div(x = self.bezel_edge + 84, y = row_y, r = 28.3 / 2, row = 5, mask = 0x1f))
+        strs.append(self.sec_div(x = self.bezel_edge + 84, y = row_y, r = 20 / 2, row = 4, mask = 0x1f))
 
         strs.append(self.bnc(x = self.bezel_edge + 16, y = 130, name = "CH 1"))
         strs.append(self.bnc(x = self.bezel_edge + 58, y = 130, name = "CH 2"))
@@ -180,17 +211,18 @@ class LayoutWriter(object):
         return circle(cx = x, cy = y, r = 10 / 2, stroke_width = 0.5)
 
 
-    def volts_div(self, x, y):
-        # TODO(siggi): Render the volts/div dials properly
+    def volts_div(self, x, y, row, mask):
+        r = 17.6 / 2
+        self.dials.append((x, y, r, row, mask, "VOLTS_DIV"))
         return '\n'.join([
             circle(cx = x, cy = y, r = 17.6 / 2, stroke_width = 0.5),
             circle(cx = x, cy = y, r = 10 / 2, stroke_width = 0.5)])
 
 
-    def sec_div(self, x, y):
-        # TODO(siggi): Render the sec/div dial properly
+    def sec_div(self, x, y, r, row, mask):
+        self.dials.append((x, y, r, row, mask, "SEC_DIV"))
         return '\n'.join([
-            circle(cx = x, cy = y, r = 28.3 / 2, stroke_width = 0.1),
+            circle(cx = x, cy = y, r = r, stroke_width = 0.1),
             circle(cx = x, cy = y, r = 21.3 / 2, stroke_width = 0.5),
             circle(cx = x, cy = y, r = 10 / 2, stroke_width = 0.5)])
 
@@ -379,6 +411,26 @@ def main():
         leds.append(LED_TEMPL.format(x = x - width / 2, y = y - height / 2, 
                         num = num, width = width, height = height))
 
+    dials = []
+    for x, y, r, row, mask, ref in l.dials:
+        dials.append(DIAL_TEMPL.format(x = x - r, y = y - r, width = r * 2, height = r * 2,
+                row = row, mask = mask, ref = ref))
+
+    volts_div_codes = [0x0F, 0x0E, 0x0C, 0x0D, 0x09, 0x08, 0x0A, 0x0B, 0x03, 0x02, 0x00]
+    volts_div = []
+    deg = -150
+    for code in volts_div_codes:
+        volts_div.append(VOLTS_DIV_TEMPL.format(deg = deg, code = code))
+        deg += 30
+
+    sec_div_codes = [0x1F, 0x1E, 0x1C, 0x1D, 0x19, 0x18, 0x1A, 0x1B, 0x13, 0x12, 0x10, 0x11, 0x15, 0x14, 0x16, 0x17, 0x07, 0x06, 0x04, 0x05, 0x01, 0x00, 0x02, 0x03, 0x0B, 	0x0A ]
+    sec_div = []
+    deg_inc = 90 / 7
+    deg = -deg_inc * 13
+    for code in sec_div_codes:
+        sec_div.append(SEC_DIV_TEMPL.format(deg = deg, code = code))
+        deg += deg_inc
+
     print(LAY_TEMPL.format(bezel = '\n'.join(bezel_svg),
                            screen_x = l.screen_x, 
                            screen_y = l.screen_y,
@@ -386,8 +438,9 @@ def main():
                            screen_height = l.screen_height,
                            buttons = '\n'.join(buttons),
                            leds = '\n'.join(leds),
-                           up_dn_switches = ""))
-#    print('\n'.join(bezel_svg))
+                           dials = '\n'.join(dials),
+                           volts_div = '\n'.join(volts_div),
+                           sec_div = '\n'.join(sec_div)))
 
 
 if __name__ == '__main__':
