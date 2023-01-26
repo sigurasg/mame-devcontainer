@@ -292,7 +292,7 @@ def main():
 
     led_x = first_pot + (88 + 120) / 2
     led_space = 4
-    l.led(x = led_x, y = 14 + 0 * led_space, name = "A SWP\nTRIGD", num = -1)
+    l.led(x = led_x, y = 14 + 0 * led_space, name = "A SWP\nTRIGD", num = 32)
     l.led(x = led_x, y = 14 + 1 * led_space, name = "READY", num = 11)
     l.led(x = led_x, y = 14 + 2 * led_space, name = "+", num = 23)
     l.led(x = led_x, y = 14 + 3 * led_space, name = "-", num = 10)
