@@ -30,6 +30,16 @@ license:CC0
     <element name="VOLTS_DIV">
     {volts_div}
     </element>
+    <element name="POWER">
+        <disk state="0">
+            <bounds x="0.0" y="0.0" width="1.0" height="1.0" />
+            <color red="1.0" green="1.0" blue="1.0" alpha="0.0"/>
+        </disk>
+        <disk state="1">
+            <bounds x="0.0" y="0.0" width="1.0" height="1.0" />
+            <color red="0.5" green="0.5" blue="0.5" />
+        </disk>
+    </element>
     <element name="Bezel">
         <image>
             <data><![CDATA[{bezel}]]>
@@ -47,6 +57,7 @@ license:CC0
 {buttons}
 {leds}
 {dials}
+{power}
     </view>
 </mamelayout>"""
 
@@ -80,8 +91,13 @@ SEC_DIV_TEMPL="""\
 <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
 <rect x="44" y="0" width="10" height="15" style="fill:rgb(0,0,0)"
 transform="rotate({deg}, 50, 50)" /></svg>]]></data>
-</image>
+</image>POWER_TEMPL
 """
+
+POWER_TEMPL = """\
+<element ref="POWER" inputtag="POWER" inputmask="0x01">
+    <bounds x="{x}" y="{y}" width="{width}" height="{height}" />
+</element>"""
 
 def rr(x, y, width, height, r, stroke_width):
     TEMPL = """<rect x="{x}mm" y="{y}mm" width="{width}mm" height="{height}mm" rx="{r}mm" ry="{r}mm"
@@ -124,6 +140,7 @@ class LayoutWriter(object):
         self.buttons = []
         self.up_dn_switches = []
         self.dials = []
+        self.power = None
         self.bezel_edge = None
 
     def output(self):
@@ -207,6 +224,7 @@ class LayoutWriter(object):
 
 
     def pow(self, x, y, name):
+        self.power = (x, y, 10 / 2)
         # TODO(siggi): Render the power button properly
         return circle(cx = x, cy = y, r = 10 / 2, stroke_width = 0.5)
 
@@ -431,6 +449,9 @@ def main():
         sec_div.append(SEC_DIV_TEMPL.format(deg = deg, code = code))
         deg += deg_inc
 
+    x, y, r = l.power
+    power = POWER_TEMPL.format(x = x - r, y = y - r, height = r * 2, width = r * 2)
+
     print(LAY_TEMPL.format(bezel = '\n'.join(bezel_svg),
                            screen_x = l.screen_x, 
                            screen_y = l.screen_y,
@@ -440,7 +461,8 @@ def main():
                            leds = '\n'.join(leds),
                            dials = '\n'.join(dials),
                            volts_div = '\n'.join(volts_div),
-                           sec_div = '\n'.join(sec_div)))
+                           sec_div = '\n'.join(sec_div),
+                           power = power))
 
 
 if __name__ == '__main__':
