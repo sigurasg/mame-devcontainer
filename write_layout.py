@@ -91,7 +91,7 @@ SEC_DIV_TEMPL="""\
 <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
 <rect x="44" y="0" width="10" height="15" style="fill:rgb(0,0,0)"
 transform="rotate({deg}, 50, 50)" /></svg>]]></data>
-</image>POWER_TEMPL
+</image>
 """
 
 POWER_TEMPL = """\
