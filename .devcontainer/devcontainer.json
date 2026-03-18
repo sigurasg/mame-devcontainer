@@ -5,12 +5,12 @@
 	"build": {
 		"dockerfile": "Dockerfile"
 	},
-	"workspaceMount": "source=${localWorkspaceFolder},target=/workspace/parent/projectFolder,type=bind",
-	"workspaceFolder": "/workspace/parent/projectFolder",
+	"workspaceMount": "source=${localWorkspaceFolder},target=/workspace/config,type=bind",
+	"workspaceFolder": "/workspace/config",
 	"mounts": [
 		{
 			"source": "${localWorkspaceFolder}/../mame",
-			"target": "/workspace/parent/mame",
+			"target": "/workspace/mame",
 			"type": "bind"
 		},
 		{
@@ -24,7 +24,7 @@
 	"remoteEnv": {
 		"DISPLAY": "${localEnv:DISPLAY}"
 	},
-	"extensions": [>
+	"extensions": [
 		"ms-vscode.cpptools",
 		"ms-vscode.makefile-tools"
 	]
