@@ -5,4 +5,4 @@ export SYMBOLS=1
 export LDFLAGS=-lfontconfig 
 
 time \
-make -C mame SUBTARGET=tektronix SOURCES=src/mame/tektronix TOOLS=1 -j5
+make -C ../mame/ SUBTARGET=tektronix SOURCES=src/mame/tektronix TOOLS=1 -j16
