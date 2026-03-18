@@ -21,9 +21,16 @@
 					"-j16"
 					// "REGENIE=1",
 				],
-				"description": "A debug build tektronix"
+				"description": "A tektronix debug build"
 			},
 		],
 		"makefile.makeDirectory": "../mame/",
+		"makefile.launchConfigurations": [
+			{
+				"cwd": "${workspaceFolder}",
+				"binaryPath": "${workspaceFolder}/../mame/tektronixd",
+				"binaryArgs": []
+			}
+		],
 	}
 }
