@@ -1,0 +1,36 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../mame"
+		}
+	],
+	"settings": {
+		"makefile.configurations": [
+			{
+				"name": "tektronixd",
+				"makeArgs": [
+					"SUBTARGET=tektronix",
+					"SOURCES=src/mame/tektronix",
+					"DEBUG=1",
+					"SYMBOLS=1",
+					"TOOLS=1",
+					"LDFLAGS=-lfontconfig",
+					"-j16"
+					// "REGENIE=1",
+				],
+				"description": "A tektronix debug build"
+			},
+		],
+		"makefile.makeDirectory": "../mame/",
+		"makefile.launchConfigurations": [
+			{
+				"cwd": "${workspaceFolder}",
+				"binaryPath": "${workspaceFolder}/../mame/tektronixd",
+				"binaryArgs": []
+			}
+		],
+	}
+}
